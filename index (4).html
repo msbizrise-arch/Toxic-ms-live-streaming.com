@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub - Toxic Era</title>
+    <style>
+        :root {
+            --primary-blue: #00d2ff;
+            --secondary-blue: #3a7bd5;
+            --pink-glow: #ff007f;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #001f3f, #00d2ff);
+            height: 100vh;
+            color: white;
+        }
+
+        /* Money Animation */
+        .money-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .money {
+            position: absolute;
+            color: #2ecc71;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(105vh) rotate(360deg); }
+        }
+
+        /* Intro Sequence */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease;
+        }
+
+        #welcome-msg {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px var(--primary-blue);
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.1); }
+        }
+
+        /* Door Animation */
+        .door-container {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+        }
+
+        .door {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: #111;
+            transition: transform 2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--primary-blue);
+        }
+
+        .left-door { left: 0; transform: translateX(0); }
+        .right-door { right: 0; transform: translateX(0); }
+
+        .door.open-left { transform: translateX(-100%); }
+        .door.open-right { transform: translateX(100%); }
+
+        /* Main Content */
+        #main-site {
+            display: none;
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 800px;
+            border: 1px solid var(--primary-blue);
+        }
+
+        .lecture-title { background: #0044ff; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        .batch-name { background: #008000; padding: 10px; border-radius: 5px; }
+
+        /* Video Container with Animated Pink Outline */
+        .video-wrapper {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 10px;
+            background: linear-gradient(90deg, var(--pink-glow), #ff80bf, var(--pink-glow));
+            background-size: 200% 200%;
+            animation: borderGlow 3s linear infinite;
+            border-radius: 15px;
+        }
+
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .video-box {
+            background: black;
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Button */
+        .watch-btn {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,0,0,0.5);
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .watch-btn:hover { transform: scale(1.1); background: #cc0000; }
+
+        .footer-credit {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="money-container" id="money-box"></div>
+
+    <div id="intro-overlay">
+        <div id="welcome-msg">WELCOME TO TOXIC ERA</div>
+    </div>
+
+    <div class="door-container" id="door-wrap">
+        <div class="door left-door"></div>
+        <div class="door right-door"></div>
+    </div>
+
+    <div id="main-site">
+        <div class="info-box">
+            <div class="lecture-title">ऐमीन 01 ऐमीन के विरचन NO DPP Extra Live Lecture</div>
+            <div class="batch-name">BATCH NAME: YAKEEN NEET HINDI 2026</div>
+        </div>
+
+        <div class="video-wrapper">
+            <div class="video-box" id="player-container">
+                <h2 style="margin-top:15%;">Video Ready to Stream</h2>
+            </div>
+        </div>
+
+        <button class="watch-btn" onclick="startVideo()">WATCH NOW</button>
+
+        <div class="footer-credit">Powered by Smarty MS</div>
+    </div>
+
+    <script>
+        // Money Rain Effect
+        function createMoney() {
+            const moneyBox = document.getElementById('money-box');
+            const icons = ['$', '₹', '💰', '💵'];
+            const m = document.createElement('div');
+            m.classList.add('money');
+            m.innerText = icons[Math.floor(Math.random() * icons.length)];
+            m.style.left = Math.random() * 100 + 'vw';
+            m.style.animationDuration = Math.random() * 3 + 2 + 's';
+            moneyBox.appendChild(m);
+            setTimeout(() => m.remove(), 5000);
+        }
+        setInterval(createMoney, 300);
+
+        // Sequence Logic
+        setTimeout(() => {
+            const intro = document.getElementById('intro-overlay');
+            const doors = document.getElementById('door-wrap');
+            const main = document.getElementById('main-site');
+            
+            // Hide intro, show doors
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.style.display = 'none';
+                doors.style.display = 'flex';
+                
+                // Start Door/Water/Sun Transition
+                setTimeout(() => {
+                    document.querySelector('.left-door').classList.add('open-left');
+                    document.querySelector('.right-door').classList.add('open-right');
+                    
+                    // Show Main Site
+                    setTimeout(() => {
+                        doors.style.display = 'none';
+                        main.style.display = 'block';
+                    }, 1500);
+                }, 2000);
+            }, 1000);
+        }, 3500);
+
+        function startVideo() {
+            const container = document.getElementById('player-container');
+            const videoUrl = "https://anonymouspwplayerr-c96de7802811.herokuapp.com/pw?url=https://d1d34p8vz63oiq.cloudfront.net/c16036bf-4e85-48cb-baaf-7193e719b9ad/master.mpd&parentId=67738e4c923a6baf5208602e&childId=697e5775544f711056f413fc&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NzA1MzU5MjYuNDE2LCJkYXRhIjp7Il9pZCI6IjY2NjQ0OGQ0NGMxZjdhOGNmOTMzMGYxMyIsInVzZXJuYW1lIjoiNzQxMDgzMzQxNSIsImZpcnN0TmFtZSI6IlJhaHVsIiwibGFzdE5hbWUiOiJHb2xhIiwib3JnYW5pemF0aW9uIjp7Il9pZCI6IjVlYjM5M2VlOTVmYWI3NDY4YTc5ZDE4OSIsIndlYnNpdGUiOiJwaHlzaWNzd2FsbGFoLmNvbSIsIm5hbWUiOiJQaHlzaWNzd2FsbGFoIn0sImVtYWlsIjoicmFodWxnb2xhMzM0NUBnbWFpbC5jb20iLCJyb2xlcyI6WyI1YjI3YmQ5NjU4NDJmOTUwYTc3OGM2ZWYiLCI1Y2M5NWEyZThiZGU0ZDY2ZGU0MDBiMzciXSwiY291bnRyeUdyb3VwIjoiSU4iLCJ0eXBlIjoiVVNFUiJ9LCJpYXQiOjE3Njk5MzExMjZ9.cFZR3jeONlb91f32syIFJnqb2TMYpNv8nxGk08i-9Pg";
+            
+            container.innerHTML = `<iframe src="${videoUrl}" allowfullscreen allow="autoplay"></iframe>`;
+            document.querySelector('.watch-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
